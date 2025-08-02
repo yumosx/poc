@@ -9,5 +9,5 @@ func main() {
 	handler := ioc.InitApp()
 	engine := gin.Default()
 	handler.Route(engine)
-	engine.Run()
+	engine.Run("localhost:8080")
 }

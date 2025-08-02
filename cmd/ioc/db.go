@@ -2,6 +2,7 @@ package ioc
 
 import (
 	"github.com/spf13/viper"
+	"github.com/yumosx/poc/internal/repo/dao"
 	"github.com/yumosx/poc/internal/utils/db"
 	"gorm.io/gorm"
 )
@@ -37,6 +38,10 @@ func initDB() *gorm.DB {
 	)
 
 	newDB, err := db.NewDB(newConfig)
+	if err != nil {
+		panic(err)
+	}
+	err = dao.InitTables(newDB)
 	if err != nil {
 		panic(err)
 	}

@@ -21,8 +21,12 @@ func (t *TaskDao) Save(ctx context.Context, task Task) error {
 	task.Ctime = now
 	task.Utime = now
 	return t.db.WithContext(ctx).Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "uuid"}},
-		DoUpdates: clause.AssignmentColumns([]string{"state", "utime", "result"}),
+		Columns: []clause.Column{{Name: "uuid"}},
+		DoUpdates: clause.Assignments(map[string]any{
+			"state":  task.State,
+			"utime":  task.Utime,
+			"result": task.Result,
+		}),
 	}).Create(&task).Error
 }
 
@@ -34,9 +38,9 @@ func (t *TaskDao) GetTask(ctx context.Context, uuid string) (Task, error) {
 }
 
 type Task struct {
-	Id      string `gorm:"column:id"`
+	Id      int64  `gorm:"column:id;autoIncrement;primaryKey"`
 	Uid     int64  `gorm:"column:uid"`
-	UUID    string `gorm:"column:uuid"`
+	UUID    string `gorm:"column:uuid;uniqueIndex;type:varchar(36)"`
 	Content string `gorm:"column:content"`
 	Result  string `gorm:"column:result"`
 	State   string `gorm:"column:state"`

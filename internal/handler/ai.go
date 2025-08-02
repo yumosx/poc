@@ -19,7 +19,7 @@ func NewHandler(svc *service.AIService) *Handler {
 }
 
 func (h *Handler) Route(engine *gin.Engine) {
-	g := engine.GET("/ai/v1")
+	g := engine.Group("/ai/v1")
 	g.GET("/list", ginx.B(h.List))
 	g.POST("/run", ginx.B(h.Run))
 	g.POST("/stream", h.Stream)
@@ -50,7 +50,7 @@ func (h *Handler) Run(ctx *ginx.Context, req SubmitTaskRequest) (ginx.Result, er
 	if err != nil {
 		return ginx.Result{Code: 500, Data: "内部错误"}, err
 	}
-	return ginx.Result{Code: 200, Data: TaskResponse{Id: id}}, nil
+	return ginx.Result{Code: 200, Data: id}, nil
 }
 
 // GetTask 获取任务的执行结果和状态
@@ -64,7 +64,7 @@ func (h *Handler) GetTask(ctx *ginx.Context) (ginx.Result, error) {
 	if err != nil {
 		return ginx.Result{Code: 500, Data: "内部错误"}, err
 	}
-	return ginx.Result{Code: 200, Data: TaskResponse{Id: task.UUID, State: task.State, Type: task.Type}}, nil
+	return ginx.Result{Code: 200, Data: TaskResponse{Id: task.UUID, State: task.State, Type: task.Type, Result: task.Result}}, nil
 }
 
 // Stream 调用对应的大模型, 并以 stream 的方式返回

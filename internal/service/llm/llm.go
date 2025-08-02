@@ -19,6 +19,7 @@ func NewHandler(token string) *Handler {
 
 func (h *Handler) Handle(ctx context.Context, req domain.LLMRequest) (string, error) {
 	resp, err := h.client.CreateChatCompletion(ctx, &deepseek.ChatCompletionRequest{
+		Model: deepseek.DeepSeekChat,
 		Messages: []deepseek.ChatCompletionMessage{
 			{Role: deepseek.ChatMessageRoleSystem, Content: h.getSystemContent(req.Type)},
 			{Role: deepseek.ChatMessageRoleUser, Content: req.Content},

@@ -25,7 +25,7 @@ func (svc *AIService) RunTask(ctx context.Context, task domain.Task) (string, er
 	if err != nil {
 		return "", err
 	}
-	go func(id string) {
+	go func(uuid string) {
 		defer func() {
 			if err := recover(); err != nil {
 				logger.Errorf("PANIC in AIService.RunTask goroutine: %v", err)
@@ -38,13 +38,19 @@ func (svc *AIService) RunTask(ctx context.Context, task domain.Task) (string, er
 		content, err := svc.handler.Handle(innerCtx, domain.LLMRequest{Type: task.Type, Content: task.Content})
 		state := domain.Running
 		if err != nil {
+			logger.Errorf("AIService|RunTask | %s: %v", uuid, err)
 			state = domain.Failed
 		} else {
 			state = domain.Success
 		}
-		_, err = svc.repo.SaveTask(innerCtx, domain.Task{UUID: id, Result: content, State: state})
+		logger.Debugf("AIService|RunTask|%s|%s", content, state)
+
+		dbCtx, cancelDb := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancelDb()
+		// 更新对应的结果
+		_, err = svc.repo.SaveTask(dbCtx, domain.Task{UUID: uuid, Result: content, State: state})
 		if err != nil {
-			logger.Errorf("AIService|RunTask | %s: %v", id, err)
+			logger.Errorf("AIService|RunTask | %s: %v", uuid, err)
 			return
 		}
 	}(id)
