@@ -1,12 +1,16 @@
 package ioc
 
-import "github.com/yumosx/poc/internal/service/llm"
+import (
+	"github.com/spf13/viper"
+	"github.com/yumosx/poc/internal/service/llm"
+)
 
 func initLLMHandler() *llm.Handler {
 	type Config struct {
-		Token   string `yaml:"token"`
-		BaseURL string `yaml:"baseURL"`
+		Token string `yaml:"token"`
 	}
-	var cfg Config
-	return llm.NewHandler(cfg.Token, cfg.BaseURL)
+	config := Config{
+		Token: viper.GetString("AI_TOKEN"),
+	}
+	return llm.NewHandler(config.Token)
 }

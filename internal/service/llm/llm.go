@@ -12,8 +12,8 @@ type Handler struct {
 	client *deepseek.Client
 }
 
-func NewHandler(token string, baseUrl string) *Handler {
-	client := deepseek.NewClient(token, baseUrl)
+func NewHandler(token string) *Handler {
+	client := deepseek.NewClient(token)
 	return &Handler{client: client}
 }
 
