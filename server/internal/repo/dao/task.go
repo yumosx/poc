@@ -42,6 +42,7 @@ type Task struct {
 	Uid     int64  `gorm:"column:uid"`
 	UUID    string `gorm:"column:uuid;uniqueIndex;type:varchar(36)"`
 	Content string `gorm:"column:content"`
+	Type    string `gorm:"column:type"`
 	Result  string `gorm:"column:result"`
 	State   string `gorm:"column:state"`
 	Ctime   int64  `gorm:"column:ctime"`

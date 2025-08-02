@@ -32,6 +32,7 @@ func (repo *AIRepo) SaveTask(ctx context.Context, task domain.Task) (string, err
 		UUID:    task.UUID,
 		Content: task.Content,
 		State:   task.State,
+		Type:    task.Type,
 		Result:  task.Result,
 	})
 
