@@ -12,8 +12,8 @@ type AIRepo struct {
 	taskDao *dao2.TaskDao
 }
 
-func NewAIRepo(dao *dao2.AIDao) *AIRepo {
-	return &AIRepo{chatDao: dao}
+func NewAIRepo(dao *dao2.AIDao, taskDao *dao2.TaskDao) *AIRepo {
+	return &AIRepo{chatDao: dao, taskDao: taskDao}
 }
 
 func (repo *AIRepo) GetTask(ctx context.Context, uuid string) (domain.Task, error) {

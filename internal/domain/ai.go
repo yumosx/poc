@@ -7,6 +7,8 @@ type LLMRequest struct {
 
 type StreamResponse struct {
 	Content string
+	Done    bool
+	Err     error
 }
 
 const (

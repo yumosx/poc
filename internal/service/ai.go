@@ -57,5 +57,6 @@ func (svc *AIService) GetTask(ctx context.Context, id string) (domain.Task, erro
 }
 
 // Stream 大模型的流式返回
-func (svc *AIService) Stream(ctx context.Context) {
+func (svc *AIService) Stream(ctx context.Context, request domain.LLMRequest) (chan domain.StreamResponse, error) {
+	return svc.handler.Stream(ctx, request)
 }

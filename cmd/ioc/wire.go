@@ -15,6 +15,7 @@ func InitApp() *handler.Handler {
 	wire.Build(
 		initDB,
 		dao.NewAIDao,
+		dao.NewTaskDao,
 		repo.NewAIRepo,
 		initLLMHandler,
 		service.NewAIService,

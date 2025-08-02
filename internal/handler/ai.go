@@ -65,5 +65,9 @@ func (h *Handler) GetTask(ctx *ginx.Context) (ginx.Result, error) {
 
 // Stream 调用对应的大模型, 并以 stream 的方式返回
 func (h *Handler) Stream(ctx *ginx.Context) (ginx.Result, error) {
+	stream, err := h.svc.Stream(ctx, domain.LLMRequest{})
+	if err != nil {
+		return ginx.Result{Code: 500, Data: "内部错误"}, err
+	}
 	return ginx.Result{}, ginx.ErrNoResponse
 }

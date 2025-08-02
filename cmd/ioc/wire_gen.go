@@ -18,7 +18,8 @@ import (
 func InitApp() *handler.Handler {
 	db := initDB()
 	aiDao := dao.NewAIDao(db)
-	aiRepo := repo.NewAIRepo(aiDao)
+	taskDao := dao.NewTaskDao(db)
+	aiRepo := repo.NewAIRepo(aiDao, taskDao)
 	llmHandler := initLLMHandler()
 	aiService := service.NewAIService(aiRepo, llmHandler)
 	handlerHandler := handler.NewHandler(aiService)

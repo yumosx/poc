@@ -2,8 +2,10 @@ package llm
 
 import (
 	"context"
+	"errors"
 	"github.com/cohesion-org/deepseek-go"
 	"github.com/yumosx/poc/internal/domain"
+	"io"
 )
 
 type Handler struct {
@@ -28,8 +30,44 @@ func (h *Handler) Handle(ctx context.Context, req domain.LLMRequest) (string, er
 	return resp.Choices[0].Message.Content, nil
 }
 
-func (h *Handler) Stream(ctx context.Context) {
+// Stream 实现大模型的流式调用
+func (h *Handler) Stream(ctx context.Context, req domain.LLMRequest) (chan domain.StreamResponse, error) {
+	request := deepseek.StreamChatCompletionRequest{
+		Model: deepseek.DeepSeekChat,
+		Messages: []deepseek.ChatCompletionMessage{
+			{Role: deepseek.ChatMessageRoleSystem, Content: h.getSystemContent(req.Type)},
+			{Role: deepseek.ChatMessageRoleUser, Content: req.Content},
+		},
+		Stream: true,
+	}
+	ch := make(chan domain.StreamResponse, 10)
+	stream, err := h.client.CreateChatCompletionStream(ctx, &request)
+	if err != nil {
+		return nil, err
+	}
+	events := make(chan domain.StreamResponse, 10)
+	go func() {
+		defer close(events)
+		h.recv(events, stream)
+	}()
+	return ch, nil
+}
 
+func (h *Handler) recv(eventCh chan domain.StreamResponse, stream deepseek.ChatCompletionStream) {
+	for {
+		chunk, err := stream.Recv()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				eventCh <- domain.StreamResponse{Done: true}
+				break
+			}
+			eventCh <- domain.StreamResponse{Err: err}
+		}
+		eventCh <- domain.StreamResponse{
+			Content: chunk.Choices[0].Delta.Content,
+			Err:     nil,
+		}
+	}
 }
 
 // getSystemContent 一个简单的提示词
