@@ -125,7 +125,8 @@ func (h *Handler) eventMessage(ctx *gin.Context, content string) {
 
 func (h *Handler) eventErr(ctx *gin.Context, err error) {
 	event := StreamResponse{
-		Err: err.Error(),
+		Type: EventErr,
+		Err:  err.Error(),
 	}
 	eventStr, _ := json.Marshal(event)
 	h.sendEvent(ctx, string(eventStr))
