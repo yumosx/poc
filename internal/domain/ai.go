@@ -1,6 +1,7 @@
 package domain
 
 type LLMRequest struct {
+	Type    string //当前这个请求是做什么的
 	Content string
 }
 
@@ -13,6 +14,13 @@ const (
 	Running = "running"
 	Failed  = "failed"
 	Success = "success"
+)
+
+// 任务的类型
+const (
+	ZH2EN     = "translate_zh2en"
+	EN2ZH     = "translate_en2zh"
+	SUMMARIZE = "summarize"
 )
 
 type Task struct {

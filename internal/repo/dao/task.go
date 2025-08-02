@@ -35,6 +35,7 @@ func (t *TaskDao) GetTask(ctx context.Context, uuid string) (Task, error) {
 
 type Task struct {
 	Id      string `gorm:"column:id"`
+	Uid     int64  `gorm:"column:uid"`
 	UUID    string `gorm:"column:uuid"`
 	Content string `gorm:"column:content"`
 	Result  string `gorm:"column:result"`

@@ -15,7 +15,7 @@ func NewHandler(svc *service.AIService) *Handler {
 	return &Handler{svc: svc}
 }
 
-func (h *Handler) PrivateRoute(engine *gin.Engine) {
+func (h *Handler) Route(engine *gin.Engine) {
 	g := engine.GET("/ai/v1")
 	g.GET("/list", ginx.B(h.List))
 	g.POST("/run", ginx.B(h.Run))
@@ -42,7 +42,7 @@ func (h *Handler) List(ctx *ginx.Context, req ListRequest) (ginx.Result, error) 
 
 // Run 提交对应的任务, 并且异步执行
 func (h *Handler) Run(ctx *ginx.Context, req SubmitTaskRequest) (ginx.Result, error) {
-	id, err := h.svc.RunTask(ctx, domain.Task{UUID: req.Id})
+	id, err := h.svc.RunTask(ctx, domain.Task{UUID: req.Id, Content: req.Content, Type: req.Type})
 	if err != nil {
 		return ginx.Result{Code: 500, Data: "内部错误"}, err
 	}

@@ -11,11 +11,11 @@ import (
 )
 
 type AIService struct {
-	handler llm.Handler
+	handler *llm.Handler
 	repo    *repo.AIRepo
 }
 
-func NewAIService(repo *repo.AIRepo, handler llm.Handler) *AIService {
+func NewAIService(repo *repo.AIRepo, handler *llm.Handler) *AIService {
 	return &AIService{repo: repo, handler: handler}
 }
 
@@ -35,12 +35,12 @@ func (svc *AIService) RunTask(ctx context.Context, task domain.Task) (string, er
 		innerCtx, cancelFunc := context.WithTimeout(context.Background(), 1*time.Minute)
 		defer cancelFunc()
 
-		content, err := svc.handler.Handle(innerCtx)
+		content, err := svc.handler.Handle(innerCtx, domain.LLMRequest{Type: task.Type, Content: task.Content})
 		state := domain.Running
 		if err != nil {
 			state = domain.Failed
 		} else {
-			state = domain.Failed
+			state = domain.Success
 		}
 		_, err = svc.repo.SaveTask(innerCtx, domain.Task{UUID: id, Result: content, State: state})
 		if err != nil {
