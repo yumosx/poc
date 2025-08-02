@@ -2,8 +2,8 @@ package ioc
 
 import (
 	"github.com/spf13/viper"
-	"github.com/yumosx/poc/internal/repo/dao"
-	"github.com/yumosx/poc/internal/utils/db"
+	"github.com/yumosx/poc/server/internal/repo/dao"
+	"github.com/yumosx/poc/server/internal/utils/db"
 	"gorm.io/gorm"
 )
 

@@ -1,2 +1,2 @@
 .idea
-./cmd/config.yaml
+server/cmd/config.yaml

@@ -7,18 +7,18 @@
 package ioc
 
 import (
-	"github.com/yumosx/poc/internal/handler"
-	"github.com/yumosx/poc/internal/repo"
-	"github.com/yumosx/poc/internal/repo/dao"
-	"github.com/yumosx/poc/internal/service"
+	"github.com/yumosx/poc/server/internal/handler"
+	"github.com/yumosx/poc/server/internal/repo"
+	dao2 "github.com/yumosx/poc/server/internal/repo/dao"
+	"github.com/yumosx/poc/server/internal/service"
 )
 
 // Injectors from wire.go:
 
 func InitApp() *handler.Handler {
 	db := initDB()
-	aiDao := dao.NewAIDao(db)
-	taskDao := dao.NewTaskDao(db)
+	aiDao := dao2.NewAIDao(db)
+	taskDao := dao2.NewTaskDao(db)
 	aiRepo := repo.NewAIRepo(aiDao, taskDao)
 	llmHandler := initLLMHandler()
 	aiService := service.NewAIService(aiRepo, llmHandler)

@@ -3,16 +3,16 @@ package repo
 import (
 	"context"
 	"github.com/google/uuid"
-	"github.com/yumosx/poc/internal/domain"
-	dao2 "github.com/yumosx/poc/internal/repo/dao"
+	"github.com/yumosx/poc/server/internal/domain"
+	"github.com/yumosx/poc/server/internal/repo/dao"
 )
 
 type AIRepo struct {
-	chatDao *dao2.AIDao
-	taskDao *dao2.TaskDao
+	chatDao *dao.AIDao
+	taskDao *dao.TaskDao
 }
 
-func NewAIRepo(dao *dao2.AIDao, taskDao *dao2.TaskDao) *AIRepo {
+func NewAIRepo(dao *dao.AIDao, taskDao *dao.TaskDao) *AIRepo {
 	return &AIRepo{chatDao: dao, taskDao: taskDao}
 }
 
@@ -28,7 +28,7 @@ func (repo *AIRepo) SaveTask(ctx context.Context, task domain.Task) (string, err
 	if task.UUID == "" {
 		task.UUID = uuid.New().String()
 	}
-	err := repo.taskDao.Save(ctx, dao2.Task{
+	err := repo.taskDao.Save(ctx, dao.Task{
 		UUID:    task.UUID,
 		Content: task.Content,
 		State:   task.State,

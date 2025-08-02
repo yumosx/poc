@@ -2,8 +2,8 @@ package ioc
 
 import (
 	"github.com/spf13/viper"
-	"github.com/yumosx/poc/internal/service/llm"
-	"github.com/yumosx/poc/internal/utils/logger"
+	"github.com/yumosx/poc/server/internal/service/llm"
+	"github.com/yumosx/poc/server/internal/utils/logger"
 	"os"
 )
 

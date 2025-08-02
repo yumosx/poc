@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"github.com/yumosx/poc/internal/domain"
-	"github.com/yumosx/poc/internal/repo"
-	"github.com/yumosx/poc/internal/service/llm"
-	"github.com/yumosx/poc/internal/utils/logger"
+	"github.com/yumosx/poc/server/internal/domain"
+	"github.com/yumosx/poc/server/internal/repo"
+	"github.com/yumosx/poc/server/internal/service/llm"
+	"github.com/yumosx/poc/server/internal/utils/logger"
 	"runtime/debug"
 	"time"
 )

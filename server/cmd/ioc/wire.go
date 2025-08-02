@@ -5,17 +5,17 @@ package ioc
 
 import (
 	"github.com/google/wire"
-	"github.com/yumosx/poc/internal/handler"
-	"github.com/yumosx/poc/internal/repo"
-	"github.com/yumosx/poc/internal/repo/dao"
-	"github.com/yumosx/poc/internal/service"
+	"github.com/yumosx/poc/server/internal/handler"
+	"github.com/yumosx/poc/server/internal/repo"
+	dao2 "github.com/yumosx/poc/server/internal/repo/dao"
+	"github.com/yumosx/poc/server/internal/service"
 )
 
 func InitApp() *handler.Handler {
 	wire.Build(
 		initDB,
-		dao.NewAIDao,
-		dao.NewTaskDao,
+		dao2.NewAIDao,
+		dao2.NewTaskDao,
 		repo.NewAIRepo,
 		initLLMHandler,
 		service.NewAIService,

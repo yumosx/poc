@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/cohesion-org/deepseek-go"
-	"github.com/yumosx/poc/internal/domain"
+	"github.com/yumosx/poc/server/internal/domain"
 	"io"
 )
 
@@ -41,7 +41,6 @@ func (h *Handler) Stream(ctx context.Context, req domain.LLMRequest) (chan domai
 		},
 		Stream: true,
 	}
-	ch := make(chan domain.StreamResponse, 10)
 	stream, err := h.client.CreateChatCompletionStream(ctx, &request)
 	if err != nil {
 		return nil, err
@@ -51,7 +50,7 @@ func (h *Handler) Stream(ctx context.Context, req domain.LLMRequest) (chan domai
 		defer close(events)
 		h.recv(events, stream)
 	}()
-	return ch, nil
+	return events, nil
 }
 
 func (h *Handler) recv(eventCh chan domain.StreamResponse, stream deepseek.ChatCompletionStream) {

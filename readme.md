@@ -88,10 +88,45 @@ curl -X POST 'http://localhost:8080/ai/v1/run' \
 ```curl
 curl -X GET 'http://localhost:8080/ai/v1/task/5365c0c8-daed-4894-95ec-69d18ee70506'
 ```
-返回的结果
-```shell
-{"code":200,"msg":"","data":{"id":"5365c0c8-daed-4894-95ec-69d18ee70506","type":"","state":"success","result":"Hello, brother."}}
-```
 
+```shell
+{
+    "code": 200,
+    "msg": "",
+    "data": {
+        "id": "5365c0c8-daed-4894-95ec-69d18ee70506",
+        "type": "",
+        "state": "success",
+        "result": "Hello, brother."
+    }
+}
+```
 4. 流式接口
 
+流式接口的测试，需要使用对应的 client.go
+
+- 服务端打印:
+```go
+[GIN] 2025/08/02 - 23:52:02 | 200 | 22.282327583s |       127.0.0.1 | POST     "/ai/v1/stream"
+2025/08/02 23:53:59.216272 DEBUG: eventMessage|
+2025/08/02 23:53:59.216531 DEBUG: eventMessage|Hello
+2025/08/02 23:53:59.748328 DEBUG: eventMessage|,
+2025/08/02 23:53:59.848696 DEBUG: eventMessage| please
+2025/08/02 23:53:59.848796 DEBUG: eventMessage| help
+2025/08/02 23:53:59.944297 DEBUG: eventMessage| me
+2025/08/02 23:53:59.944433 DEBUG: eventMessage| translate
+2025/08/02 23:54:00.047413 DEBUG: eventMessage| this
+2025/08/02 23:54:00.143595 DEBUG: eventMessage| into
+2025/08/02 23:54:00.143665 DEBUG: eventMessage| English
+2025/08/02 23:54:00.241179 DEBUG: eventMessage|.
+2025/08/02 23:54:00.241687 DEBUG: eventMessage|
+```
+
+- 客户端打印
+
+**使用的是拼接之后的**
+```go
+开始接收流式响应：
+Hello, please help me translate this into English.
+流结束
+```

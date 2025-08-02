@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"github.com/ecodeclub/ginx"
 	"github.com/gin-gonic/gin"
-	"github.com/yumosx/poc/internal/domain"
-	"github.com/yumosx/poc/internal/service"
-	"github.com/yumosx/poc/internal/utils/logger"
+	"github.com/yumosx/poc/server/internal/domain"
+	"github.com/yumosx/poc/server/internal/service"
+	"github.com/yumosx/poc/server/internal/utils/logger"
 )
 
 type Handler struct {
@@ -119,6 +119,7 @@ func (h *Handler) eventMessage(ctx *gin.Context, content string) {
 		Type:    EventMessage,
 		Content: content,
 	}
+	logger.Debugf("eventMessage|%v", content)
 	eventStr, _ := json.Marshal(event)
 	h.sendEvent(ctx, string(eventStr))
 }
