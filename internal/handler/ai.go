@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/ecodeclub/ginx"
 	"github.com/gin-gonic/gin"
 	"github.com/yumosx/poc/internal/domain"
 	"github.com/yumosx/poc/internal/service"
+	"github.com/yumosx/poc/internal/utils/logger"
 )
 
 type Handler struct {
@@ -19,6 +22,7 @@ func (h *Handler) Route(engine *gin.Engine) {
 	g := engine.GET("/ai/v1")
 	g.GET("/list", ginx.B(h.List))
 	g.POST("/run", ginx.B(h.Run))
+	g.POST("/stream", h.Stream)
 	g.GET("/task/:id", ginx.W(h.GetTask))
 }
 
@@ -64,10 +68,73 @@ func (h *Handler) GetTask(ctx *ginx.Context) (ginx.Result, error) {
 }
 
 // Stream 调用对应的大模型, 并以 stream 的方式返回
-func (h *Handler) Stream(ctx *ginx.Context) (ginx.Result, error) {
-	stream, err := h.svc.Stream(ctx, domain.LLMRequest{})
-	if err != nil {
-		return ginx.Result{Code: 500, Data: "内部错误"}, err
+func (h *Handler) Stream(ctx *gin.Context) {
+	var req LLMRequest
+	if err := ctx.Bind(&req); err != nil {
+		logger.Errorf("stream| bind| %v", err)
+		return
 	}
-	return ginx.Result{}, ginx.ErrNoResponse
+
+	ctx.Writer.Header().Set("Content-Type", "text/event-stream")
+	ctx.Writer.Header().Set("Cache-Control", "no-cache")
+	ctx.Writer.Header().Set("Connection", "keep-alive")
+
+	stream, err := h.svc.Stream(ctx, domain.LLMRequest{Content: req.Content, Type: req.Type})
+	if err != nil {
+		h.eventErr(ctx, err)
+		return
+	}
+	h.stream(ctx, stream)
+}
+
+func (h *Handler) stream(ctx *gin.Context, ch chan domain.StreamResponse) {
+	for {
+		select {
+		case event, ok := <-ch:
+			if !ok || event.Done {
+				h.eventDone(ctx)
+				return
+			}
+			if event.Err != nil {
+				h.eventErr(ctx, event.Err)
+				return
+			}
+			h.eventMessage(ctx, event.Content)
+		case <-ctx.Request.Context().Done():
+			return
+		}
+	}
+}
+
+func (h *Handler) sendEvent(ctx *gin.Context, data string) {
+	buf := bytes.Buffer{}
+	buf.WriteString(data)
+	buf.WriteByte('\n')
+	_, _ = ctx.Writer.Write(buf.Bytes())
+	ctx.Writer.Flush()
+}
+
+func (h *Handler) eventMessage(ctx *gin.Context, content string) {
+	event := StreamResponse{
+		Type:    EventMessage,
+		Content: content,
+	}
+	eventStr, _ := json.Marshal(event)
+	h.sendEvent(ctx, string(eventStr))
+}
+
+func (h *Handler) eventErr(ctx *gin.Context, err error) {
+	event := StreamResponse{
+		Err: err.Error(),
+	}
+	eventStr, _ := json.Marshal(event)
+	h.sendEvent(ctx, string(eventStr))
+}
+
+func (h *Handler) eventDone(ctx *gin.Context) {
+	event := StreamResponse{
+		Type: EventDone,
+	}
+	eventStr, _ := json.Marshal(event)
+	h.sendEvent(ctx, string(eventStr))
 }

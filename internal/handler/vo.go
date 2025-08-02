@@ -1,8 +1,6 @@
 package handler
 
 type ListRequest struct {
-	limit  int
-	offset int
 }
 
 type Function struct {
@@ -28,4 +26,21 @@ type TaskResponse struct {
 	Type   string `json:"type"`
 	State  string `json:"state"`
 	Result string `json:"result"`
+}
+
+type LLMRequest struct {
+	Content string `json:"content"`
+	Type    string `json:"type"`
+}
+
+const (
+	EventErr     = "event_err"
+	EventMessage = "event_message"
+	EventDone    = "event_done"
+)
+
+type StreamResponse struct {
+	Type    string `json:"type"`
+	Content string `json:"content"`
+	Err     string `json:"err"`
 }
